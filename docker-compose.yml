@@ -13,6 +13,8 @@ services:
       - ./data/mongo:/data/db
     ports:
       - "27017:27017"
+    profiles:
+      - backend
 
   mongo-express:
     image: mongo-express
@@ -28,6 +30,8 @@ services:
       ME_CONFIG_MONGODB_PORT: 27017
     depends_on:
       - mongo
+    profiles:
+      - backend
 
   fastapi:
     container_name: fastapi
@@ -47,6 +51,8 @@ services:
     depends_on:
       - mqtt
       - mongo
+    profiles:
+      - backend
     
   mqtt:
     image: eclipse-mosquitto:latest
@@ -60,6 +66,8 @@ services:
       - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - ./mosquitto/data:/mosquitto/data
       - ./mosquitto/log:/mosquitto/log
+    profiles:
+      - backend
 
   mqtt_publisher:
     container_name: mqtt_publisher
@@ -68,9 +76,11 @@ services:
       dockerfile: mqtt_publisher.dockerfile
     volumes:
       - './mqtt:/app'
-    depends_on:
-      - mqtt
+    # depends_on:
+    #   - mqtt
     restart: unless-stopped
+    profiles:
+      - publisher
 
   mqtt_subscriber:
     container_name: mqtt_subscriber
@@ -79,6 +89,8 @@ services:
       dockerfile: mqtt_subscriber.dockerfile
     volumes:
       - './mqtt:/app'
-    depends_on:
-      - mqtt
+    # depends_on:
+    #   - mqtt
     restart: unless-stopped
+    profiles:
+      - subscriber
