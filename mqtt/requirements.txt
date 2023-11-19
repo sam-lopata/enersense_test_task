@@ -1,2 +1,2 @@
-paho-mqtt
-pymongo
+paho-mqtt==1.6.1
+pymongo==4.6.0
