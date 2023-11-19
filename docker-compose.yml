@@ -5,6 +5,7 @@ services:
   mongo:
     image: mongo
     restart: always
+    container_name: mongo
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
@@ -15,6 +16,7 @@ services:
 
   mongo-express:
     image: mongo-express
+    container_name: mongo-express
     restart: always
     ports:
       - 8081:8081
@@ -24,8 +26,11 @@ services:
       ME_CONFIG_MONGODB_ENABLE_ADMIN: true
       ME_CONFIG_MONGODB_SERVER: mongo
       ME_CONFIG_MONGODB_PORT: 27017
+    depends_on:
+      - mongo
 
   fastapi:
+    container_name: fastapi
     build:
       context: ./
       dockerfile: fastapi.dockerfile
@@ -39,3 +44,41 @@ services:
       MONGODB_USER: root
       MONGODB_PASSWORD: password
       PYTHONPATH: /app
+    depends_on:
+      - mqtt
+      - mongo
+    
+  mqtt:
+    image: eclipse-mosquitto:latest
+    container_name: mqtt
+    expose:
+      - 1883
+    ports:
+      - 1883:1883
+    restart: unless-stopped
+    volumes:
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+
+  mqtt_publisher:
+    container_name: mqtt_publisher
+    build:
+      context: ./
+      dockerfile: mqtt_publisher.dockerfile
+    volumes:
+      - './mqtt:/app'
+    depends_on:
+      - mqtt
+    restart: unless-stopped
+
+  mqtt_subscriber:
+    container_name: mqtt_subscriber
+    build:
+      context: ./
+      dockerfile: mqtt_subscriber.dockerfile
+    volumes:
+      - './mqtt:/app'
+    depends_on:
+      - mqtt
+    restart: unless-stopped
