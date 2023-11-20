@@ -30,12 +30,14 @@ To run publisher
 SLEEP=30 docker-compose --profile publisher up
 ```
 Where SLEEP is amount of seconds to sleep between generating messages, defaul is 5 sec.
+The publisher will exist on connection errors. For example try to stop mqtt server.
 
 To run subscriber
 ```
 docker-compose --profile subscriber up
 ```
 Subscriber writes logs to `./mqtt/log/sub.log` and saves messages to MongoDb.
+The subscriber will try to reconnect unless stopped manually. For example try to stop mqtt server.
 
 To rebuild any service add `--build` to the end of the command. That is needed of you make changes to code.
 

@@ -2,6 +2,7 @@
 Class to interact with MQTT broker
 On message recieve it writes it to log file and store in mongodb
 """
+import uuid
 import json
 import paho.mqtt.client as mqtt
 from mongo import Mongo
@@ -9,17 +10,19 @@ from logger import Logger
 
 MQTT_BROKER = "mqtt"
 MQTT_PORT = 1883
-MQTT_KEEPALIVE = 60
+MQTT_KEEPALIVE = 30
 MQTT_QOS = 2
 MQTT_TOPIC = "charger/1/connector/1/session/1"
 
 
 class MQTT(object):
     def __init__(self, mongo: Mongo, logger: Logger):
+        self.client_id = uuid.uuid4()
         self.mongo: Mongo = mongo
         self.logger = logger
-        self.mqtt_client = mqtt.Client()
+        self.mqtt_client = mqtt.Client(self.client_id.hex, clean_session=False)
         self.mqtt_client.on_connect = self.on_connect
+        self.mqtt_client.on_disconnect = self.on_disconnect
         self.mqtt_client.on_message = self.on_message
         self.mqtt_client.on_publish = self.on_publish
 
@@ -35,6 +38,10 @@ class MQTT(object):
         self.logger.log_subscriber(msg)
         self.mongo.save_one(msg)
         return msg
+
+    def on_disconnect(self, client, userdata, rc):
+        if rc != 0:
+            print("Unexpected MQTT disconnection. Attempting to reconnect.")
 
     def run(self):
         print("Running MQTT")
@@ -60,6 +67,5 @@ class MQTT(object):
     def subscribe(self):
         print("Subscribing MQTT")
         self.mqtt_client.connect(MQTT_BROKER, MQTT_PORT, MQTT_KEEPALIVE)
-        subscirbe_result = self.mqtt_client.subscribe(MQTT_TOPIC, qos=0)
-        print(subscirbe_result)
+        self.mqtt_client.subscribe(MQTT_TOPIC, qos=0)
         self.mqtt_client.loop_forever()
