@@ -1,3 +1,6 @@
+"""
+DB models
+"""
 from typing import Optional, List
 from typing_extensions import Annotated
 from pydantic.functional_validators import BeforeValidator
@@ -12,7 +15,6 @@ class SessionModel(BaseModel):
     """
     Container for a single session.
     """
-
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
     timestamp: int = Field(...)
     topic: str = Field(...)
@@ -27,5 +29,4 @@ class SessionCollection(BaseModel):
     """
     A container holding a list of `SessionModel` instances.
     """
-
     sessions: List[SessionModel]

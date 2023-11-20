@@ -1,3 +1,6 @@
+"""
+Class to interact with mongodb
+"""
 from datetime import datetime
 import paho.mqtt.client as mqtt
 import pymongo

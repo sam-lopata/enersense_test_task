@@ -1,11 +1,17 @@
+"""
+MQTT subscriber
+"""
+
 import traceback
 import sys
 from mongo import Mongo
 from logger import Logger
 from mqtt import MQTT
 
+LOG_FILE = './log/sub.log'
+
 mongo = Mongo()
-logger = Logger()
+logger = Logger(LOG_FILE)
 mqtt = MQTT(mongo, logger)
 mongo.connect()
 

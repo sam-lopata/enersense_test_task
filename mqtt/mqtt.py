@@ -1,3 +1,7 @@
+"""
+Class to interact with MQTT broker
+On message recieve it writes it to log file and store in mongodb
+"""
 import json
 import paho.mqtt.client as mqtt
 from mongo import Mongo
@@ -19,7 +23,6 @@ class MQTT(object):
         self.mqtt_client.on_message = self.on_message
         self.mqtt_client.on_publish = self.on_publish
 
-    # noinspection PyUnusedLocal
     @staticmethod
     def on_connect(client: mqtt.Client, userdata, flags, rc):
         print("Connected MQTT")
@@ -27,10 +30,9 @@ class MQTT(object):
     def on_publish(self, client, userdata, mid):
         print("msg published (mid=%s)", mid)
 
-    # noinspection PyUnusedLocal
     def on_message(self, client: mqtt.Client, userdata, msg: mqtt.MQTTMessage):
         print("Recieved MQTT")
-        self.logger.log(msg)
+        self.logger.log_subscriber(msg)
         self.mongo.save_one(msg)
         return msg
 
@@ -43,6 +45,7 @@ class MQTT(object):
         print("Stopping MQTT")
         self.mqtt_client.loop_stop()
         self.mqtt_client.disconnect()
+        self.logger.stop()
 
     def publish(self, data: json):
         print("publishing: ", json.dumps(data))

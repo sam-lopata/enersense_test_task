@@ -76,6 +76,8 @@ services:
     volumes:
       - './mqtt:/app'
     restart: no
+    environment:
+      - SLEEP=${SLEEP}
     profiles:
       - publisher
 
