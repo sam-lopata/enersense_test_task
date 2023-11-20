@@ -21,7 +21,9 @@ Mongodb web interface is asessible on `http://0.0.0.0:8081/`
 
 API documentation is accessible on `http://localhost:8000/docs`
 
-API is accessible on `http://localhost:8000/`
+API is accessible on `http://localhost:8000/` and it has 2 endpoints: 
+- `/` - which returns paginated results and assepts `page` and `size` query parameters.
+- `/all` - which returns all results upi to 10000 records
 
 To run publisher
 ```

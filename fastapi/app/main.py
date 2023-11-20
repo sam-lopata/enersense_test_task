@@ -24,6 +24,9 @@ session_collection = db.get_collection(MONGO_COLLECTION)
     response_model_by_alias=False,
 )
 async def list_sessions():
+    """
+    Endpoint to get paginated results
+    """
     return await paginate(session_collection)
 
 
@@ -34,6 +37,10 @@ async def list_sessions():
     response_model_by_alias=False,
 )
 async def list_all_sessions():
+    """
+    Endpoint to get all. That endpoint is an example of way recieving 
+    all the records and for now limited to 10000 results
+    """
     return SessionCollection(sessions=await session_collection.find().to_list(10000))
 
 add_pagination(app)

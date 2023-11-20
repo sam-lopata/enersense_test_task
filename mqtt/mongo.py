@@ -46,6 +46,9 @@ class Mongo(object):
             return True
 
     def save_one(self, msg: mqtt.MQTTMessage):
+        """
+        As that was not specified on task I desided not to explode payload in fields but save it as one field with json data
+        """
         now = datetime.now()
         try:
             document={
