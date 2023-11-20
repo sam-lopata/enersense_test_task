@@ -9,6 +9,8 @@ cd enersense_test_task
 ```
 
 ### Run
+You need installed and running `docker` server and `docker-compose`.
+
 The `docker-compose` structured with profiles to run different services.
 
 To run mongodb, mongo-express, mqtt and fastapi applications
